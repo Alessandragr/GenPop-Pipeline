@@ -1,46 +1,47 @@
 import os
 import gzip
 
-def add_sample_tag_to_vcf(vcf_file, output_file, base_input_dir):
+def AddSampleNameVcf(vcfFile, outputFile, baseInputDir):
     # Obtém o caminho relativo em relação ao diretório base
-    relative_path = os.path.relpath(vcf_file, base_input_dir)
-    sample_name = relative_path.replace(os.sep, "/")  # Substitui separadores de diretório por "/"
+    relativePath = os.path.relpath(vcfFile, baseInputDir)
+    sampleName = relativePath.replace(os.sep, "/")  # Substitui separadores de diretório por "/"
 
     # Verifica se o arquivo é .vcf ou .vcf.gz
-    open_func = gzip.open if vcf_file.endswith(".gz") else open
-    mode = "rt" if vcf_file.endswith(".gz") else "r"
+    openFunc = gzip.open if vcfFile.endswith(".gz") else open
+    mode = "rt" if vcfFile.endswith(".gz") else "r"
 
-    with open_func(vcf_file, mode) as infile, open(output_file, "w") as outfile:
+    with openFunc(vcfFile, mode) as infile, open(outputFile, "w") as outfile:
         for line in infile:
             if line.startswith("#CHROM"):
                 # Adiciona o caminho completo como nome da amostra na linha de cabeçalho
-                line = line.strip() + f"\t{sample_name}\n"
+                line = line.strip() + f"\t{sampleName}\n"
             outfile.write(line)
 
-    print(f"Amostra '{sample_name}' processada e salva em '{output_file}'.")
+    print(f"Amostra '{sampleName}' processada e salva em '{outputFile}'.")
 
-def process_vcf_files(input_dir):
-    output_base_dir = os.path.join(input_dir, "renomeados")
+def processVcfFile(inputDir):
+    outputBaseDir = os.path.join(inputDir, "renomeados")
 
-    for root, _, files in os.walk(input_dir):
+    for root, _, files in os.walk(inputDir):
         for file in files:
             if file.endswith(".vcf") or file.endswith(".vcf.gz"):
-                vcf_file = os.path.join(root, file)
+                vcfFile = os.path.join(root, file)
                 
                 # Cria a estrutura de saída equivalente dentro da pasta 'renomeados'
-                relative_path = os.path.relpath(root, input_dir)
-                output_dir = os.path.join(output_base_dir, relative_path)
+                relativePath = os.path.relpath(root, inputDir)
+                outputDir = os.path.join(outputBaseDir, relativePath)
                 
-                if not os.path.exists(output_dir):
-                    os.makedirs(output_dir)
+                if not os.path.exists(outputDir):
+                    os.makedirs(outputDir)
                 
-                output_file = os.path.join(output_dir, file)
-                add_sample_tag_to_vcf(vcf_file, output_file, input_dir)
+                outputFile = os.path.join(outputDir, file)
+                AddSampleNameVcf(vcfFile, outputFile, inputDir)
 
-    print(f"Todos os arquivos foram processados e salvos em '{output_base_dir}'.")
+    print(f"\nTodos os arquivos foram processados e salvos em '{outputBaseDir}'.")
 
 # Configuração: diretório de entrada
-input_directory = "caminho/para/sua/pasta/analise"  # Altere para o caminho correto
+inputDirectory = "C:/Users/aless/Downloads/GenPop-Pipeline/analise_bill"  
 
-# Executa o script
-process_vcf_files(input_directory)
+# Execução
+processVcfFile(inputDirectory)
+
