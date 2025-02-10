@@ -45,3 +45,6 @@ inputDirectory = "C:/Users/aless/Downloads/GenPop-Pipeline/analise_bill"
 # Execução
 processVcfFile(inputDirectory)
 
+
+
+
